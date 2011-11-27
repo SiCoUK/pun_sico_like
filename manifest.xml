@@ -13,8 +13,8 @@
 <extension engine="1.0">
     <id>sico_like</id>
     <title>SiCo Like</title>
-    <version>0.0.1</version>
-    <description>Add Facebook Like button top topics and posts.</description>
+    <version>0.0.7</version>
+    <description>Add Facebook Like button to forums, topics and posts.</description>
     <author>Simon Corless</author>
     <minversion>1.4</minversion>
     <maxtestedon>1.4</maxtestedon>
@@ -28,6 +28,24 @@
     ]]></uninstall>
 
     <hooks>
+        <hook id="hd_gen_elements"><![CDATA[
+        // Create the facebook JS SDK
+        $facebook = '<div id="fb-root"></div>
+            <script>(function(d, s, id) {
+              var js, fjs = d.getElementsByTagName(s)[0];
+              if (d.getElementById(id)) {return;}
+              js = d.createElement(s); js.id = id;
+              js.src = "//connect.facebook.net/en_GB/all.js#xfbml=1&appId=307613092598665";
+              fjs.parentNode.insertBefore(js, fjs);
+            }(document, "script", "facebook-jssdk"));</script>';
         
+        // Add the SDK just after the messages div right at the top of the forum
+        $gen_elements['<!-- forum_messages -->'] .= $facebook;
+        ]]></hook>
+        
+        <hook id="vt_row_pre_post_actions_merge"><![CDATA[
+        // Add the like button
+        $forum_page['post_actions']['fb_like'] = '<div class="fb-like" data-href="' . forum_link($forum_url['post'], $cur_post['id']) . '" data-send="false" data-layout="button_count" data-width="80" data-show-faces="false" data-colorscheme="dark" data-font="arial"></div>';
+        ]]></hook>
     </hooks>
 </extension>
